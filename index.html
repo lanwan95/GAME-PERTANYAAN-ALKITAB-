@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Pertanyaan Pengetahuan Umum</title>
+    <style>
+        /* CSS untuk desain game */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .game-container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            width: 380px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #4CAF50;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .question-container {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .alert {
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #ffcccb;
+            color: #ff0000;
+            border: 1px solid #ff0000;
+            border-radius: 5px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .group-scores {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            background-color: #f1f8e9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .group {
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            font-size: 20px;
+            width: 45%;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        #score-group1 {
+            background-color: #007BFF; /* Biru untuk Kelompok 1 */
+        }
+
+        #score-group2 {
+            background-color: #FF5722; /* Oranye untuk Kelompok 2 */
+        }
+
+        .group:hover {
+            transform: scale(1.05);
+        }
+
+        .result-container {
+            display: none;
+            margin-top: 20px;
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .result {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .winner {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff5722;
+        }
+
+        #timer {
+            font-size: 18px;
+            color: #FF6347;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        #start-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #start-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsif untuk perangkat mobile */
+        @media (max-width: 600px) {
+            .game-container {
+                width: 90%;
+            }
+
+            .group-scores {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .group {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Game Pertanyaan Pengetahuan Umum</h1>
+        <div id="timer" style="display:none;">Waktu: 30</div> <!-- Timer countdown -->
+        <button id="start-btn">Start</button> <!-- Tombol Start -->
+        <div id="question" class="question-container"></div>
+        <input type="text" id="answer" placeholder="Jawaban Anda" />
+        <button id="submit-btn">Kirim Jawaban</button>
+
+        <div id="alert-message" class="alert"></div>
+
+        <div class="group-scores">
+            <div id="score-group1" class="group">Kelompok 1= 0</div>
+            <div id="score-group2" class="group">Kelompok 2= 0</div>
+        </div>
+
+        <!-- Tampilan hasil akhir dan pemenang -->
+        <div class="result-container" id="result-container">
+            <div id="final-result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Daftar pertanyaan dan jawaban
+        const questions = [
+            { question: "Siapa yang memimpin bangsa Israel keluar dari Mesir?", answer: "Musa" },
+            { question: "Berapa jumlah kitab dalam Perjanjian Baru?", answer: "27" },
+            { question: "Apa nama anak pertama Adam dan Hawa? ", answer: "Kain" },
+            { question: "Siapa yang dikenal sebagai manusia yang menurut hati Allah?", answer: "Daud" },
+            { question: "Dalam Kitab Kejadian, apa nama tempat dimana Tuhan menciptakan manusia?", answer: "Taman Eden" },
+            { question: "Siapa yang menulis Kitab Wahyu?", answer: "Yohanes" },
+            { question: "Apa nama rasul yang berdiri di samping Yesus ketika Yesus disalibkan dan berkata, Sesungguhnya, orang ini adalah Anak Allah? ", answer: "Perwira Romawi" },
+            { question: "Apa nama orang yang dibangkitkan Yesus setelah ia mati selama empat hari?", answer: "Lazarus" },
+            { question: "Kitab mana dalam Alkitab yang terkenal dengan perkataan Kasihilah sesamamu manusia seperti dirimu sendiri?", answer: "27" },
+            { question: "Siapakah yang diutus oleh Tuhan untuk memberitakan kabar baik di kota Nineveh?", answer: "Yunus" },
+
+        ];
+
+        let scoreGroup1 = 0;
+        let scoreGroup2 = 0;
+        let currentQuestionIndex = 0;
+        let currentGroup = 1; // Untuk menentukan giliran kelompok 1 atau kelompok 2
+        let timerValue = 30; // Timer dimulai dari 30 detik
+        let timerInterval;
+        let gameOver = false; // Untuk memastikan game selesai
+
+        // Fungsi untuk memulai permainan dan menampilkan timer
+        function startGame() {
+            document.getElementById("timer").style.display = 'block'; // Menampilkan timer
+            document.getElementById("start-btn").style.display = 'none'; // Menyembunyikan tombol Start
+            showQuestion(); // Tampilkan pertanyaan pertama
+        }
+
+        function showQuestion() {
+            if (gameOver) return; // Jangan tampilkan pertanyaan jika game sudah selesai
+
+            const currentQuestion = questions[currentQuestionIndex];
+            document.getElementById("question").innerText = currentQuestion.question;
+            document.getElementById("answer").value = '';
+            document.getElementById("alert-message").style.display = 'none';  // Menyembunyikan alert
+            startTimer(); // Mulai timer setiap kali pertanyaan baru ditampilkan
+        }
+
+        function startTimer() {
+            // Reset timer setiap kali pertanyaan baru ditampilkan
+            clearInterval(timerInterval);
+            timerValue = 30; // Timer dimulai dari 30 detik
+            document.getElementById("timer").innerText = `Waktu: ${timerValue}`;
+
+            timerInterval = setInterval(function() {
+                timerValue--;
+                document.getElementById("timer").innerText = `Waktu: ${timerValue}`;
+
+                if (timerValue <= 0) {
+                    clearInterval(timerInterval); // Hentikan timer
+                    handleTimeUp();
+                }
+            }, 1000); // Update timer setiap detik
+        }
+
+        function handleTimeUp() {
+            if (gameOver) return; // Jangan tampilkan pesan waktu habis jika game sudah selesai
+
+            // Ketika waktu habis, berikan kesempatan kelompok lain untuk menjawab
+            document.getElementById("alert-message").style.display = 'block';
+            document.getElementById("alert-message").innerText = `Waktu habis! Pertanyaan ini akan dilempar ke kelompok ${currentGroup === 1 ? 2 : 1}.`;
+
+            // Berikan waktu untuk berpindah kelompok
+            setTimeout(function() {
+                currentGroup = currentGroup === 1 ? 2 : 1;
+                showQuestion(); // Tampilkan pertanyaan berikutnya
+            }, 5000); // Setelah 5 detik, giliran beralih
+        }
+
+        function checkAnswer() {
+            if (gameOver) return; // Jangan jawab jika game sudah selesai
+
+            const playerAnswer = document.getElementById("answer").value.trim();
+            const correctAnswer = questions[currentQuestionIndex].answer;
+
+            // Jika jawaban benar
+            if (playerAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+                if (currentGroup === 1) {
+                    scoreGroup1++;
+                } else {
+                    scoreGroup2++;
+                }
+
+                updateScores();
+
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    showQuestion();
+                } else {
+                    showFinalResults();
+                }
+            } else {
+                document.getElementById("alert-message").style.display = 'block';
+                document.getElementById("alert-message").innerText = `Jawaban salah! Pertanyaan ini akan dilempar ke kelompok ${currentGroup === 1 ? 2 : 1}.`;
+
+                // Berikan waktu untuk berpindah ke kelompok lain
+                setTimeout(function() {
+                    currentGroup = currentGroup === 1 ? 2 : 1;
+                    showQuestion(); // Tampilkan pertanyaan berikutnya
+                }, 5000); // 5 detik
+            }
+        }
+
+        function updateScores() {
+            document.getElementById("score-group1").innerText = `Kelompok 1= ${scoreGroup1}`;
+            document.getElementById("score-group2").innerText = `Kelompok 2= ${scoreGroup2}`;
+        }
+
+        function showFinalResults() {
+            gameOver = true; // Tandai permainan selesai
+
+            const resultContainer = document.getElementById("result-container");
+            const finalResult = document.getElementById("final-result");
+
+            // Menampilkan pemenang dan skor akhir dalam format yang diminta
+            const winner = scoreGroup1 > scoreGroup2 ? "Kelompok 1" : (scoreGroup2 > scoreGroup1 ? "Kelompok 2" : "Tidak ada, hasil seri");
+
+            finalResult.innerHTML = `
+                <div class="winner">PEMENANG:</div>
+                <div>${winner}</div>
+                <div class="result">Skor Akhir: ${scoreGroup1 > scoreGroup2 ? scoreGroup1 : scoreGroup2}</div>
+            `;
+
+            resultContainer.style.display = 'block';
+
+            // Sembunyikan timer setelah game selesai
+            document.getElementById("timer").style.display = 'none';
+        }
+
+        // Memastikan tombol "Kirim Jawaban" menjalankan checkAnswer()
+        document.getElementById("submit-btn").addEventListener("click", function() {
+            checkAnswer();
+        });
+
+        // Menambahkan event listener untuk tombol "Start"
+        document.getElementById("start-btn").addEventListener("click", function() {
+            startGame();
+        });
+
+      // Mencegah klik kanan (right-click)
+    document.addEventListener("contextmenu", function(event) {
+        event.preventDefault(); 
+    });
+    </script>
+</body>
+</html>
