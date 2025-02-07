@@ -89,6 +89,9 @@
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            display: flex; /* Flexbox untuk memposisikan elemen di tengah */
+            justify-content: center; /* Menempatkan kelompok di tengah */
+            gap: 20px; /* Menambahkan jarak antar kelompok */
         }
 
         .group {
@@ -100,7 +103,6 @@
             width: 45%;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin: 10px;
             transition: transform 0.3s ease;
         }
 
@@ -184,8 +186,10 @@
         <div id="timer" style="display:none;">Waktu: 30</div> <!-- Timer countdown -->
         <button id="start-btn">Start</button> <!-- Tombol Start -->
         <div id="question" class="question-container"></div>
-        <input type="text" id="answer" placeholder="Jawaban Anda" />
-        <button id="submit-btn">Kirim Jawaban</button>
+        
+        <!-- Kolom jawaban disembunyikan saat awal -->
+        <input type="text" id="answer" placeholder="Jawaban Anda" style="display:none;" />
+        <button id="submit-btn" style="display:none;">Kirim Jawaban</button>
 
         <div id="alert-message" class="alert"></div>
 
@@ -203,7 +207,7 @@
     <script>
         // Daftar pertanyaan dan jawaban
         const questions = [
-            { question: "Siapa yang memimpin bangsa Israel keluar dari Mesir?", answer: "Musa" },
+        { question: "Siapa yang memimpin bangsa Israel keluar dari Mesir?", answer: "Musa" },
             { question: "Berapa jumlah kitab dalam Perjanjian Baru?", answer: "27" },
             { question: "Apa nama anak pertama Adam dan Hawa? ", answer: "Kain" },
             { question: "Siapa yang dikenal sebagai manusia yang menurut hati Allah?", answer: "Daud" },
@@ -228,6 +232,8 @@
         function startGame() {
             document.getElementById("timer").style.display = 'block'; // Menampilkan timer
             document.getElementById("start-btn").style.display = 'none'; // Menyembunyikan tombol Start
+            document.getElementById("answer").style.display = 'block'; // Menampilkan kolom jawaban
+            document.getElementById("submit-btn").style.display = 'block'; // Menampilkan tombol kirim jawaban
             showQuestion(); // Tampilkan pertanyaan pertama
         }
 
